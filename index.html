@@ -18,12 +18,10 @@
 </head>
 <body>
 
-    <h1>Importer un fichier CSV</h1>
-    <input type="file" id="fileInput" accept=".csv">
-
-    <p id="message" style="display: none;">Inventaire (vous pouvez cliquer sur l'entête des colonnes pour réaliser un tri)</p>
-
-    <input type="text" id="searchInput" placeholder="Rechercher..." style="display: none;">
+    <h1>Inventaire</h1>
+    <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données.</p>
+    
+    <input type="text" id="searchInput" placeholder="Rechercher...">
 
     <table id="csvTable">
         <thead>
@@ -38,52 +36,44 @@
         let sortColumn = null;
         let sortAscending = true;
 
-        // Gestion du chargement manuel d'un fichier CSV
-        document.getElementById("fileInput").addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    Papa.parse(e.target.result, {
+        // Charger le fichier CSV depuis GitHub
+        const csvUrl = "https://raw.githubusercontent.com/ton-nom-utilisateur/mon-inventaire/main/data.csv"; // Remplace par ton URL
+
+        // Fonction pour charger et afficher les données CSV
+        function chargerCSV() {
+            fetch(csvUrl)
+                .then(response => response.text())
+                .then(csvText => {
+                    Papa.parse(csvText, {
                         delimiter: ";",
                         header: true,
                         complete: function(result) {
                             data = result.data;
-                            filteredData = [...data]; // Copie initiale des données
+                            filteredData = [...data];
                             afficherTableau();
-                            document.getElementById("searchInput").style.display = "block"; // Afficher la barre de recherche
                         }
                     });
-                };
-                reader.readAsText(file);
-            }
-        });
+                })
+                .catch(error => console.error('Erreur de chargement CSV:', error));
+        }
 
-        // Fonction pour afficher le tableau
+        // Afficher les données dans un tableau HTML
         function afficherTableau() {
             const tableHeader = document.getElementById("tableHeader");
             const tableBody = document.getElementById("tableBody");
-            const message = document.getElementById("message");
 
             tableHeader.innerHTML = "";
             tableBody.innerHTML = "";
 
             if (filteredData.length === 0) return;
 
-            message.style.display = "block";
-
-            // Création des en-têtes de colonnes avec tri
             Object.keys(filteredData[0]).forEach((colonne, index) => {
                 const th = document.createElement("th");
                 th.textContent = colonne;
                 th.onclick = () => trierColonne(index, colonne);
-                if (sortColumn === index) {
-                    th.classList.add(sortAscending ? "sorted-asc" : "sorted-desc");
-                }
                 tableHeader.appendChild(th);
             });
 
-            // Création des lignes du tableau
             filteredData.forEach(ligne => {
                 const tr = document.createElement("tr");
                 Object.values(ligne).forEach(valeur => {
@@ -95,41 +85,40 @@
             });
         }
 
-        // Fonction pour trier les colonnes
+        // Trier les colonnes
         function trierColonne(index, colonne) {
-            sortAscending = (sortColumn === index) ? !sortAscending : true;
-            sortColumn = index;
+            if (sortColumn === colonne) {
+                sortAscending = !sortAscending;
+            } else {
+                sortColumn = colonne;
+                sortAscending = true;
+            }
 
             filteredData.sort((a, b) => {
-                let valA = a[colonne] || "";
-                let valB = b[colonne] || "";
+                const valA = a[colonne];
+                const valB = b[colonne];
 
-                // Convertir en nombre si possible
-                const numA = parseFloat(valA);
-                const numB = parseFloat(valB);
-
-                if (!isNaN(numA) && !isNaN(numB)) {
-                    return sortAscending ? numA - numB : numB - numA;
-                } else {
-                    return sortAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
-                }
+                if (valA < valB) return sortAscending ? -1 : 1;
+                if (valA > valB) return sortAscending ? 1 : -1;
+                return 0;
             });
 
             afficherTableau();
         }
 
         // Fonction de recherche
-        document.getElementById("searchInput").addEventListener("input", function() {
-            const searchTerm = this.value.toLowerCase();
-
-            filteredData = data.filter(ligne =>
-                Object.values(ligne).some(valeur =>
-                    valeur.toLowerCase().includes(searchTerm)
-                )
-            );
-
+        document.getElementById("searchInput").addEventListener("input", function(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            filteredData = data.filter(row => {
+                return Object.values(row).some(value =>
+                    value.toString().toLowerCase().includes(searchTerm)
+                );
+            });
             afficherTableau();
         });
+
+        // Charger le CSV dès que la page est prête
+        window.onload = chargerCSV;
     </script>
 
 </body>
