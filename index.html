@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste Dynamique CSV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; cursor: pointer; }
+        th { background-color: #f4f4f4; }
+        th.sorted-asc::after { content: " 🔼"; }
+        th.sorted-desc::after { content: " 🔽"; }
+        #message { font-weight: bold; margin-top: 20px; }
+        #searchInput { margin-top: 10px; padding: 5px; width: 100%; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <h1>Importer un fichier CSV</h1>
+    <input type="file" id="fileInput" accept=".csv">
+
+    <p id="message" style="display: none;">Inventaire (vous pouvez cliquer sur l'entête des colonnes pour réaliser un tri)</p>
+
+    <input type="text" id="searchInput" placeholder="Rechercher..." style="display: none;">
+
+    <table id="csvTable">
+        <thead>
+            <tr id="tableHeader"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        let data = [];
+        let filteredData = [];
+        let sortColumn = null;
+        let sortAscending = true;
+
+        // Gestion du chargement manuel d'un fichier CSV
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    Papa.parse(e.target.result, {
+                        delimiter: ";",
+                        header: true,
+                        complete: function(result) {
+                            data = result.data;
+                            filteredData = [...data]; // Copie initiale des données
+                            afficherTableau();
+                            document.getElementById("searchInput").style.display = "block"; // Afficher la barre de recherche
+                        }
+                    });
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Fonction pour afficher le tableau
+        function afficherTableau() {
+            const tableHeader = document.getElementById("tableHeader");
+            const tableBody = document.getElementById("tableBody");
+            const message = document.getElementById("message");
+
+            tableHeader.innerHTML = "";
+            tableBody.innerHTML = "";
+
+            if (filteredData.length === 0) return;
+
+            message.style.display = "block";
+
+            // Création des en-têtes de colonnes avec tri
+            Object.keys(filteredData[0]).forEach((colonne, index) => {
+                const th = document.createElement("th");
+                th.textContent = colonne;
+                th.onclick = () => trierColonne(index, colonne);
+                if (sortColumn === index) {
+                    th.classList.add(sortAscending ? "sorted-asc" : "sorted-desc");
+                }
+                tableHeader.appendChild(th);
+            });
+
+            // Création des lignes du tableau
+            filteredData.forEach(ligne => {
+                const tr = document.createElement("tr");
+                Object.values(ligne).forEach(valeur => {
+                    const td = document.createElement("td");
+                    td.textContent = valeur;
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Fonction pour trier les colonnes
+        function trierColonne(index, colonne) {
+            sortAscending = (sortColumn === index) ? !sortAscending : true;
+            sortColumn = index;
+
+            filteredData.sort((a, b) => {
+                let valA = a[colonne] || "";
+                let valB = b[colonne] || "";
+
+                // Convertir en nombre si possible
+                const numA = parseFloat(valA);
+                const numB = parseFloat(valB);
+
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return sortAscending ? numA - numB : numB - numA;
+                } else {
+                    return sortAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+            });
+
+            afficherTableau();
+        }
+
+        // Fonction de recherche
+        document.getElementById("searchInput").addEventListener("input", function() {
+            const searchTerm = this.value.toLowerCase();
+
+            filteredData = data.filter(ligne =>
+                Object.values(ligne).some(valeur =>
+                    valeur.toLowerCase().includes(searchTerm)
+                )
+            );
+
+            afficherTableau();
+        });
+    </script>
+
+</body>
+</html>
