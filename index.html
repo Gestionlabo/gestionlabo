@@ -92,7 +92,59 @@ function afficherTableau() {
                 img.alt = "Pictogramme SGH07";
                 img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
                 td.appendChild(img);
-            } else {
+
+            else if (index === 7 && valeur === "SGH01") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/GHS-pictogram-explos.svg/100px-GHS-pictogram-explos.svg.png";
+                img.alt = "Pictogramme SGH01";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            } 
+            else if (index === 7 && valeur === "SGH03") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/GHS-pictogram-rondflam.svg/100px-GHS-pictogram-rondflam.svg.png";
+                img.alt = "Pictogramme SGH03";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            }           
+                        else if (index === 7 && valeur === "SGH05") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/GHS-pictogram-acid.svg/100px-GHS-pictogram-acid.svg.png";
+                img.alt = "Pictogramme SGH05";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            } 
+                        else if (index === 7 && valeur === "SGH06") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/GHS-pictogram-skull.svg/100px-GHS-pictogram-skull.svg.png";
+                img.alt = "Pictogramme SGH06";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            } 
+                        else if (index === 7 && valeur === "SGH08") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/GHS-pictogram-silhouette.svg/100px-GHS-pictogram-silhouette.svg.png";
+                img.alt = "Pictogramme SGH08";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            } 
+                        else if (index === 7 && valeur === "SGH09") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/GHS-pictogram-pollu.svg?uselang=fr";
+                img.alt = "Pictogramme SGH09";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            } 
+                        else if (index === 7 && valeur === "SGH02") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/GHS-pictogram-flamme.svg/100px-GHS-pictogram-flamme.svg.png";
+                img.alt = "Pictogramme SGH02";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img); 
+            } 
+                      
+            
+           }  else {
                 td.textContent = valeur;  // Sinon, afficher la valeur du texte
             }
 
