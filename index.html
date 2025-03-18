@@ -60,33 +60,49 @@
                 .catch(error => console.error('Erreur de chargement CSV:', error));
         }
 
-        // Afficher les données dans un tableau HTML
-        function afficherTableau() {
-            const tableHeader = document.getElementById("tableHeader");
-            const tableBody = document.getElementById("tableBody");
+       // Afficher les données dans un tableau HTML
+function afficherTableau() {
+    const tableHeader = document.getElementById("tableHeader");
+    const tableBody = document.getElementById("tableBody");
 
-            tableHeader.innerHTML = "";
-            tableBody.innerHTML = "";
+    tableHeader.innerHTML = "";
+    tableBody.innerHTML = "";
 
-            if (filteredData.length === 0) return;
+    if (filteredData.length === 0) return;
 
-            Object.keys(filteredData[0]).forEach((colonne, index) => {
-                const th = document.createElement("th");
-                th.textContent = colonne;
-                th.onclick = () => trierColonne(index, colonne);
-                tableHeader.appendChild(th);
-            });
+    // Générer les en-têtes de colonnes
+    Object.keys(filteredData[0]).forEach((colonne, index) => {
+        const th = document.createElement("th");
+        th.textContent = colonne;
+        th.onclick = () => trierColonne(index, colonne);
+        tableHeader.appendChild(th);
+    });
 
-            filteredData.forEach(ligne => {
-                const tr = document.createElement("tr");
-                Object.values(ligne).forEach(valeur => {
-                    const td = document.createElement("td");
-                    td.textContent = valeur;
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
-            });
-        }
+    // Générer les lignes du tableau
+    filteredData.forEach(ligne => {
+        const tr = document.createElement("tr");
+        
+        Object.entries(ligne).forEach(([colonne, valeur], index) => {
+            const td = document.createElement("td");
+
+            // Si la valeur de la colonne 4 (index 3) est "SGH07", afficher l'image
+            if (index === 3 && valeur === "SGH07") {
+                const img = document.createElement("img");
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/c/c3/GHS-pictogram-exclam.svg";
+                img.alt = "Pictogramme SGH07";
+                img.style.width = "30px"; // Ajuste la taille de l'image si nécessaire
+                td.appendChild(img);
+            } else {
+                td.textContent = valeur;  // Sinon, afficher la valeur du texte
+            }
+
+            tr.appendChild(td);
+        });
+
+        tableBody.appendChild(tr);
+    });
+}
+
 
        // Trier les colonnes
 function trierColonne(index, colonne) {
