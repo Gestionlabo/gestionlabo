@@ -145,26 +145,39 @@
         }
 
 function trierColonne(index, colonne) {
-    if (index === 6) { // Si c'est la colonne 7 (index 6)
-        // Classer la colonne 7 par ordre croissant
-        filteredData.sort((a, b) => {
-            const numA = parseFloat(a[colonne]) || 0; // Traite les valeurs non numériques comme 0
-            const numB = parseFloat(b[colonne]) || 0;
-            return numA - numB; // Tri croissant
-        });
+    // Définir l'ordre de tri
+    if (sortColumn === colonne) {
+        sortAscending = !sortAscending;
     } else {
-        // Sinon, effectuer le tri habituel (par défaut par ordre alphabétique)
-        filteredData.sort((a, b) => {
-            const valA = a[colonne] || "";
-            const valB = b[colonne] || "";
-            const numA = isNaN(valA) ? valA : parseFloat(valA);
-            const numB = isNaN(valB) ? valB : parseFloat(valB);
-
-            if (numA < numB) return -1;
-            if (numA > numB) return 1;
-            return 0;
-        });
+        sortColumn = colonne;
+        sortAscending = true;
     }
+
+    filteredData.sort((a, b) => {
+        let valA = a[colonne] || "";
+        let valB = b[colonne] || "";
+
+        // Spécifique pour la colonne 1 (État physique : Solide avant Liquide)
+        if (index === 0) {
+            const ordre = { "Solide": 0, "Liquide": 1 };
+            return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
+        }
+
+        // Tri alphabétique pour colonnes 2 et 3
+        if (index === 1 || index === 2) {
+            return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
+        }
+
+        // Tri numérique pour colonnes 4 et 6
+        if (index === 3 || index === 5) {
+            const numA = parseFloat(valA) || 0;
+            const numB = parseFloat(valB) || 0;
+            return (numA - numB) * (sortAscending ? 1 : -1);
+        }
+
+        // Tri par défaut (chaîne de caractères)
+        return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
+    });
 
     afficherTableau();
 }
