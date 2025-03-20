@@ -147,7 +147,7 @@
 function trierColonne(index, colonne) {
     // Définir l'ordre de tri
     if (sortColumn === colonne) {
-        sortAscending = !sortAscending;
+        sortAscending = !sortAscending; // Inverser le tri si on reclique
     } else {
         sortColumn = colonne;
         sortAscending = true;
@@ -181,6 +181,7 @@ function trierColonne(index, colonne) {
 
     afficherTableau();
 }
+
 
 
         document.getElementById("searchInput").addEventListener("input", function(event) {
