@@ -16,7 +16,9 @@
 </head>
 <body>
 
-    <h1>Inventaire v14</h1>
+    <h1>Inventaire</h1>
+    
+    <p>Stock au 12/03/2025</p>
     
     <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données. Pour trier par pictogrammes de sécurité, veuillez rechercher SGH.. (SGH01 pour explosif, 02 inflammable, 03 comburant, 05 corrosif, 06 mortel, 07 nocif, 08 cancérogène et 09 environnement)</p>
     
@@ -77,7 +79,9 @@
             Object.keys(filteredData[0]).forEach(colonne => {
                 const th = document.createElement("th");
                 th.textContent = colonne;
-                th.onclick = () => trierColonne(colonne);
+                if (colonne !== "Nom produit") { // Ne pas ajouter de tri pour la colonne 3
+                    th.onclick = () => trierColonne(colonne);
+                }
                 tableHeader.appendChild(th);
             });
 
@@ -125,21 +129,23 @@
                     return valA - valB;
                 }
 
-                // Si la colonne contient des chaînes, en particulier pour les colonnes 1, 2, et 3
-                const regex = /(\d+)(.*)/; // Expression régulière pour extraire les chiffres
-                const matchA = valA.match(regex);
-                const matchB = valB.match(regex);
+                // Si la colonne contient des chaînes (en particulier pour la colonne 2)
+                if (index === 1) {
+                    const regex = /(\d+)(.*)/; // Expression régulière pour extraire les chiffres
+                    const matchA = valA.match(regex);
+                    const matchB = valB.match(regex);
 
-                // Comparaison numérique au début de la chaîne
-                if (matchA && matchB) {
-                    const numA = parseInt(matchA[1], 10);
-                    const numB = parseInt(matchB[1], 10);
-                    if (numA !== numB) {
-                        return numA - numB;
+                    // Comparaison numérique au début de la chaîne
+                    if (matchA && matchB) {
+                        const numA = parseInt(matchA[1], 10);
+                        const numB = parseInt(matchB[1], 10);
+                        if (numA !== numB) {
+                            return numA - numB;
+                        }
                     }
                 }
 
-                // Comparaison lexicographique si les nombres sont égaux
+                // Comparaison lexicographique si les valeurs sont égales
                 return valA.localeCompare(valB);
             });
 
