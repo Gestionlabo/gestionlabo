@@ -18,7 +18,7 @@
 </head>
 <body>
 
-    <h1>Inventaire v2655dfr</h1>
+    <h1>Inventaire vdésespoir</h1>
     
     <p>Stock au 12/03/2025</p>
     
@@ -145,7 +145,30 @@
             });
         }
 
-// Fonction de tri améliorée pour les chaînes alphanumériques
+// Fonction de tri naturel pour les chaînes contenant des chiffres et des lettres
+function naturalSort(a, b) {
+    const re = /(\d+)|(\D+)/g;
+    const aParts = a.match(re) || [];
+    const bParts = b.match(re) || [];
+
+    for (let i = 0; i < Math.min(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i];
+        const bPart = bParts[i];
+
+        // Si c'est un nombre, on fait la comparaison numérique
+        if (/\d/.test(aPart) && /\d/.test(bPart)) {
+            const numA = parseInt(aPart, 10);
+            const numB = parseInt(bPart, 10);
+            if (numA !== numB) return numA - numB;
+        } else {
+            // Sinon on compare les chaînes de caractères
+            if (aPart !== bPart) return aPart.localeCompare(bPart);
+        }
+    }
+
+    return aParts.length - bParts.length;
+}
+
 function trierColonne(index, colonne) {
     // Définir l'ordre de tri
     if (sortColumn === colonne) {
@@ -159,25 +182,18 @@ function trierColonne(index, colonne) {
         let valA = a[colonne] || "";
         let valB = b[colonne] || "";
 
-        // Utiliser une fonction de comparaison insensible à la casse et numérique
-        const compare = (a, b) => {
-            if (a === b) return 0;
-            if (a < b) return sortAscending ? -1 : 1;
-            return sortAscending ? 1 : -1;
-        };
-
         // Spécifique pour la colonne 1 (État physique : Solide avant Liquide)
         if (index === 0) {
             const ordre = { "Solide": 0, "Liquide": 1 };
             return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
         }
 
-        // Tri pour la colonne 2 (noms chimiques)
+        // Tri pour les colonnes 2 et 3 (noms chimiques ou autres chaînes alphanumériques)
         if (index === 1 || index === 2) {
-            // Normaliser en minuscules pour un tri cohérent
             valA = valA.toLowerCase();
             valB = valB.toLowerCase();
-            return compare(valA, valB);
+            const result = naturalSort(valA, valB);
+            return result * (sortAscending ? 1 : -1);
         }
 
         // Tri numérique pour colonnes 4 et 6
@@ -188,11 +204,12 @@ function trierColonne(index, colonne) {
         }
 
         // Tri par défaut (chaîne de caractères)
-        return compare(valA, valB);
+        return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
     });
 
     afficherTableau();
 }
+
 
 
 
