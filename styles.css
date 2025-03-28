@@ -27,7 +27,7 @@ th {
 }
 
 th {
-    padding-right: 30px; /* Ajouté plus d'espace à droite pour la flèche */
+    padding-right: 10px; /* Ajouté plus d'espace à droite pour la flèche */
 }
 
 th[data-sortable="true"]::after {
