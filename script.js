@@ -111,8 +111,14 @@ function afficherTableau() {
 }
 
 function trierColonne(index, colonne) {
+    // Supprime les classes de tri des autres colonnes
+    document.querySelectorAll("th").forEach(th => {
+        th.classList.remove("sorted-asc", "sorted-desc");
+    });
+
+    // Définir l'ordre de tri
     if (sortColumn === colonne) {
-        sortAscending = !sortAscending;
+        sortAscending = !sortAscending; // Inverser le tri si on reclique
     } else {
         sortColumn = colonne;
         sortAscending = true;
@@ -121,18 +127,28 @@ function trierColonne(index, colonne) {
     filteredData.sort((a, b) => {
         let valA = a[colonne] || "";
         let valB = b[colonne] || "";
+
+        // Tri spécifique pour certaines colonnes
+        if (index === 0) {
+            const ordre = { "Solide": 0, "Liquide": 1 };
+            return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
+        }
+        if (index === 1 || index === 2) {
+            return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
+        }
+        if (index === 3 || index === 5) {
+            return (parseFloat(valA) - parseFloat(valB)) * (sortAscending ? 1 : -1);
+        }
+
         return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
     });
+
+    // Appliquer la classe de tri à la colonne cliquée
+    const th = document.querySelectorAll("th")[index];
+    th.classList.add(sortAscending ? "sorted-asc" : "sorted-desc");
 
     afficherTableau();
 }
 
-document.getElementById("searchInput").addEventListener("input", function(event) {
-    const searchTerm = event.target.value.toLowerCase();
-    filteredData = data.filter(row => 
-        Object.values(row).some(value => value.toString().toLowerCase().includes(searchTerm))
-    );
-    afficherTableau();
-});
 
 window.onload = chargerCSV;
