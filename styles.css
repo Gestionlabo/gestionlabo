@@ -28,26 +28,29 @@ th {
 th {
     position: relative;
     cursor: pointer;
-    padding-right: 20px; /* Espace pour la flèche */
+    padding-right: 30px; /* Plus d'espace pour la flèche */
 }
 
 th::after {
-    content: " ⬍"; /* Flèche par défaut (haut et bas) */
+    content: " ⬍"; /* Flèche par défaut */
     position: absolute;
     right: 5px;
-    font-size: 14px;
+    font-size: 20px;  /* Augmenter la taille de la flèche */
     opacity: 0.5;
 }
 
 th.sorted-asc::after {
     content: " 🔼"; /* Flèche vers le haut */
     opacity: 1;
+    font-size: 20px;  /* Taille augmentée */
 }
 
 th.sorted-desc::after {
     content: " 🔽"; /* Flèche vers le bas */
     opacity: 1;
+    font-size: 20px;  /* Taille augmentée */
 }
+
 
 
 #searchInput {
