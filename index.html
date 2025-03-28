@@ -18,8 +18,9 @@
 </head>
 <body>
 
-    <h1>Inventaire</h1>
+    <h1>Inventaire v chill</h1>
     
+    <p>Stock au 12/03/2025</p>
     
     <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données. Pour trier par pictogrammes de sécurité, veuillez rechercher SGH.. (SGH01 pour explosif, 02 inflammable, 03 comburant, 05 corrosif, 06 mortel, 07 nocif, 08 cancérogène et 09 environnement)</p>
     
@@ -144,7 +145,39 @@
             });
         }
 
+// Fonction de tri naturel pour les chaînes contenant des chiffres et des lettres
+function naturalSort(a, b) {
+    const re = /(\d+)|(\D+)/g;
+    const aParts = a.match(re) || [];
+    const bParts = b.match(re) || [];
+
+    for (let i = 0; i < Math.min(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i];
+        const bPart = bParts[i];
+
+        // Si c'est un nombre, on fait la comparaison numérique
+        if (/\d/.test(aPart) && /\d/.test(bPart)) {
+            const numA = parseInt(aPart, 10);
+            const numB = parseInt(bPart, 10);
+            if (numA !== numB) return numA - numB;
+        } else {
+            // Sinon on compare les chaînes de caractères
+            if (aPart !== bPart) return aPart.localeCompare(bPart);
+        }
+    }
+
+    return aParts.length - bParts.length;
+}
+
 function trierColonne(index, colonne) {
+    // Liste des colonnes interdites au tri
+    const colonnesInterdites = [0, 2, 4, 7, 8, 9, 10];
+
+    // Vérifie si la colonne est dans la liste des colonnes interdites
+    if (colonnesInterdites.includes(index)) {
+        return; // Ne fait rien si la colonne est interdite
+    }
+
     // Définir l'ordre de tri
     if (sortColumn === colonne) {
         sortAscending = !sortAscending; // Inverser le tri si on reclique
@@ -157,19 +190,20 @@ function trierColonne(index, colonne) {
         let valA = a[colonne] || "";
         let valB = b[colonne] || "";
 
-        // Spécifique pour la colonne 1 (État physique : Solide avant Liquide)
-        if (index === 0) {
-            const ordre = { "Solide": 0, "Liquide": 1 };
-            return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
+        // Si on trie la colonne 2 (index 1), tri d'abord les chiffres, puis les éléments alphabétiques
+        if (index === 1) {
+            const isNumericA = /^\d/.test(valA); // Vérifie si la valeur commence par un chiffre
+            const isNumericB = /^\d/.test(valB); // Vérifie si la valeur commence par un chiffre
+
+            if (isNumericA && !isNumericB) return -1; // Les chiffres viennent en premier
+            if (!isNumericA && isNumericB) return 1; // Les non-chiffres viennent après
+
+            // Si les deux valeurs commencent par un chiffre ou les deux par des lettres, on fait un tri naturel
+            return naturalSort(valA, valB) * (sortAscending ? 1 : -1);
         }
 
-        // Tri alphabétique pour colonnes 2 et 3
-        if (index === 1 || index === 2) {
-            return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
-        }
-
-        // Tri numérique pour colonnes 4 et 6
-        if (index === 3 || index === 5) {
+        // Tri numérique pour certaines colonnes
+        if (index === 1 || index === 3 || index === 5) {
             const numA = parseFloat(valA) || 0;
             const numB = parseFloat(valB) || 0;
             return (numA - numB) * (sortAscending ? 1 : -1);
@@ -181,6 +215,10 @@ function trierColonne(index, colonne) {
 
     afficherTableau();
 }
+
+
+
+
 
 
 
