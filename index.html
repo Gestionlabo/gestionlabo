@@ -18,7 +18,7 @@
 </head>
 <body>
 
-    <h1>Inventaire vespérance</h1>
+    <h1>Inventaire vespérancdfdfgdfcge</h1>
     
     <p>Stock au 12/03/2025</p>
     
@@ -171,7 +171,7 @@ function naturalSort(a, b) {
 
 function trierColonne(index, colonne) {
     // Liste des colonnes interdites au tri
-    const colonnesInterdites = [1, 3, 7, 8, 9, 10];
+    const colonnesInterdites = [0, 2, 4, 7, 8, 9, 10];
 
     // Vérifie si la colonne est dans la liste des colonnes interdites
     if (colonnesInterdites.includes(index)) {
@@ -191,7 +191,7 @@ function trierColonne(index, colonne) {
         let valB = b[colonne] || "";
 
         // Tri numérique pour certaines colonnes
-        if (index === 1 || index === 2 || index === 3 || index === 5) {
+        if (index === 1 || index === 3 || index === 5) {
             const numA = parseFloat(valA) || 0;
             const numB = parseFloat(valB) || 0;
             return (numA - numB) * (sortAscending ? 1 : -1);
