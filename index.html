@@ -18,7 +18,7 @@
 </head>
 <body>
 
-    <h1>Inventaire v2655</h1>
+    <h1>Inventaire v2655dfr</h1>
     
     <p>Stock au 12/03/2025</p>
     
@@ -145,7 +145,8 @@
             });
         }
 
-        function trierColonne(index, colonne) {
+// Fonction de tri améliorée pour les chaînes alphanumériques
+function trierColonne(index, colonne) {
     // Définir l'ordre de tri
     if (sortColumn === colonne) {
         sortAscending = !sortAscending; // Inverser le tri si on reclique
@@ -158,15 +159,25 @@
         let valA = a[colonne] || "";
         let valB = b[colonne] || "";
 
+        // Utiliser une fonction de comparaison insensible à la casse et numérique
+        const compare = (a, b) => {
+            if (a === b) return 0;
+            if (a < b) return sortAscending ? -1 : 1;
+            return sortAscending ? 1 : -1;
+        };
+
         // Spécifique pour la colonne 1 (État physique : Solide avant Liquide)
         if (index === 0) {
             const ordre = { "Solide": 0, "Liquide": 1 };
             return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
         }
 
-        // Tri alphabétique pour colonnes 2 et 3
+        // Tri pour la colonne 2 (noms chimiques)
         if (index === 1 || index === 2) {
-            return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
+            // Normaliser en minuscules pour un tri cohérent
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+            return compare(valA, valB);
         }
 
         // Tri numérique pour colonnes 4 et 6
@@ -177,7 +188,7 @@
         }
 
         // Tri par défaut (chaîne de caractères)
-        return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
+        return compare(valA, valB);
     });
 
     afficherTableau();
