@@ -7,19 +7,21 @@ const csvUrl = "https://raw.githubusercontent.com/Gestionlabo/gestionlabo/refs/h
 
 function chargerCSV() {
     fetch(csvUrl)
-        .then(response => response.text())
-        .then(csvText => {
-            Papa.parse(csvText, {
-                delimiter: ";",
-                header: true,
-                complete: function(result) {
-                    data = result.data;
-                    filteredData = [...data];
-                    afficherTableau();
-                }
-            });
-        })
-        .catch(error => console.error('Erreur de chargement CSV:', error));
+    .then(response => response.text())
+    .then(csvText => {
+        Papa.parse(csvText, {
+            delimiter: ";",
+            header: true,
+            encoding: "UTF-8", // Ajout de l'encodage UTF-8
+            complete: function(result) {
+                data = result.data.filter(row => Object.values(row).some(value => value.trim() !== "")); // Suppression des lignes vides
+                filteredData = [...data];
+                afficherTableau();
+            }
+        });
+    })
+    .catch(error => console.error('Erreur de chargement CSV:', error));
+
 }
 
 function afficherTableau() {
