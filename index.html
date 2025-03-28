@@ -16,7 +16,9 @@
 </head>
 <body>
 
-    <h1>Inventaire v9</h1>
+    <h1>Inventaire v10</h1>
+    
+    <p>Stock au 12/03/2025</p>
     
     <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données. Pour trier par pictogrammes de sécurité, veuillez rechercher SGH.. (SGH01 pour explosif, 02 inflammable, 03 comburant, 05 corrosif, 06 mortel, 07 nocif, 08 cancérogène et 09 environnement)</p>
     
@@ -64,13 +66,15 @@
 
             if (filteredData.length === 0) return;
 
+            // Ajouter les entêtes des colonnes
             Object.keys(filteredData[0]).forEach((colonne) => {
                 const th = document.createElement("th");
                 th.textContent = colonne;
-                th.onclick = () => trierColonne(colonne);
+                th.onclick = () => trierColonne(colonne); // Trier lors du clic sur l'entête
                 tableHeader.appendChild(th);
             });
 
+            // Ajouter les lignes du tableau
             filteredData.forEach(ligne => {
                 const tr = document.createElement("tr");
 
@@ -142,7 +146,7 @@
         }
 
         function trierColonne(colonne) {
-            // Vérifier la colonne à trier et appliquer le tri adéquat
+            // Trouver l'index de la colonne sélectionnée
             const index = Object.keys(filteredData[0]).indexOf(colonne);
 
             if (index === 0 || index === 1 || index === 2 || index === 4) { // Tri alphabétique pour les colonnes 1, 2, 3, 5
