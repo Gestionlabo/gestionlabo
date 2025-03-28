@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste Dynamique CSV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -19,83 +18,220 @@
 </head>
 <body>
 
-    <table id="myTable">
-        <tr>
-            <th>Nom</th>
-            <th>Âge</th>
-        </tr>
-        <!-- Les données seront ajoutées ici -->
-    </table>
+    <h1>Inventaire vespérancdfdfgdfcge</h1>
     
-    <button onclick="readData()">Charger les données</button>
+    <p>Stock au 12/03/2025</p>
+    
+    <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données. Pour trier par pictogrammes de sécurité, veuillez rechercher SGH.. (SGH01 pour explosif, 02 inflammable, 03 comburant, 05 corrosif, 06 mortel, 07 nocif, 08 cancérogène et 09 environnement)</p>
+    
+    <input type="text" id="searchInput" placeholder="Rechercher...">
+
+    <table id="csvTable">
+        <thead>
+            <tr id="tableHeader"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
 
     <script>
-        // Charger l'API Google Sheets
-        function loadClient() {
-            gapi.client.setApiKey('AIzaSyBgtbd5GfM7WCPHx9edD2y1k0BGjJuplxw');  // Remplace 'TON_CLE_API' par ta clé API
-            return gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4')
-                .then(function() {
-                    console.log("API client loaded for Google Sheets");
-                }, function(error) {
-                    console.error("Error loading API client", error);
-                });
+        let data = [];
+        let filteredData = [];
+        let sortColumn = null;
+        let sortAscending = true;
+
+        // Charger le fichier CSV depuis GitHub
+        const csvUrl = "https://raw.githubusercontent.com/Gestionlabo/gestionlabo/refs/heads/main/data.csv"; // Remplace par ton URL
+
+        function chargerCSV() {
+            fetch(csvUrl)
+                .then(response => response.text())
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        delimiter: ";",
+                        header: true,
+                        complete: function(result) {
+                            data = result.data;
+                            filteredData = [...data];
+                            afficherTableau();
+                        }
+                    });
+                })
+                .catch(error => console.error('Erreur de chargement CSV:', error));
         }
-    
-        // Fonction pour lire les données depuis Google Sheets
-        function readData() {
-            var spreadsheetId = '1NIf0WW4AQjA-7JXAQjjWo6RAxU0woHc0ECgl3ePAXaw'; // Remplace avec l'ID de ton Google Sheets
-            var range = 'Sheet1!A1:B10';  // La plage de cellules à lire (par exemple A1:B10)
-            
-            var request = gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: spreadsheetId,
-                range: range
+
+        function afficherTableau() {
+            const tableHeader = document.getElementById("tableHeader");
+            const tableBody = document.getElementById("tableBody");
+
+            tableHeader.innerHTML = "";
+            tableBody.innerHTML = "";
+
+            if (filteredData.length === 0) return;
+
+            Object.keys(filteredData[0]).forEach((colonne, index) => {
+                const th = document.createElement("th");
+                th.textContent = colonne;
+                th.onclick = () => trierColonne(index, colonne);
+                tableHeader.appendChild(th);
             });
-            
-            request.then(function(response) {
-                var data = response.result.values;
-                console.log(data);  // Affiche les données récupérées
-                // Ajouter les données dans le tableau HTML
-                var table = document.getElementById('myTable');
-                for (var i = 0; i < data.length; i++) {
-                    var row = table.insertRow(i + 1); // Ajouter une nouvelle ligne (à partir de la 2e ligne)
-                    for (var j = 0; j < data[i].length; j++) {
-                        var cell = row.insertCell(j);
-                        cell.textContent = data[i][j]; // Insérer les données dans les cellules
+
+            filteredData.forEach(ligne => {
+                const tr = document.createElement("tr");
+
+                Object.entries(ligne).forEach(([colonne, valeur], index) => {
+                    const td = document.createElement("td");
+
+                    if (index === 6) {  // Vérifie si on est bien dans la colonne 8
+                        td.innerHTML = "";  
+                        const pictos = valeur.split(" ");  // Séparer plusieurs SGH
+
+                        pictos.forEach(picto => {
+                            const img = document.createElement("img");
+                            img.style.width = "45px"; 
+
+                            switch (picto) {
+                                case "SGH07":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/c/c3/GHS-pictogram-exclam.svg";
+                                    img.alt = "Pictogramme SGH07";
+                                    break;    
+                                case "SGH04":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/6/6a/GHS-pictogram-bottle.svg";
+                                    img.alt = "Pictogramme SGH04";
+                                    break;
+                                case "SGH01":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/GHS-pictogram-explos.svg/100px-GHS-pictogram-explos.svg.png";
+                                    img.alt = "Pictogramme SGH01";
+                                    break;
+                                case "SGH02":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/GHS-pictogram-flamme.svg/100px-GHS-pictogram-flamme.svg.png";
+                                    img.alt = "Pictogramme SGH02";
+                                    break;
+                                case "SGH03":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/GHS-pictogram-rondflam.svg/100px-GHS-pictogram-rondflam.svg.png";
+                                    img.alt = "Pictogramme SGH03";
+                                    break;
+                                case "SGH05":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/GHS-pictogram-acid.svg/100px-GHS-pictogram-acid.svg.png";
+                                    img.alt = "Pictogramme SGH05";
+                                    break;
+                                case "SGH06":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/GHS-pictogram-skull.svg/100px-GHS-pictogram-skull.svg.png";
+                                    img.alt = "Pictogramme SGH06";
+                                    break;
+                                case "SGH08":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/GHS-pictogram-silhouette.svg/100px-GHS-pictogram-silhouette.svg.png";
+                                    img.alt = "Pictogramme SGH08";
+                                    break;
+                                case "SGH09":
+                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/GHS-pictogram-pollu.svg?uselang=fr";
+                                    img.alt = "Pictogramme SGH09";
+                                    break;
+                            }
+
+                            if (img.src) { 
+                                td.appendChild(img);
+                                td.appendChild(document.createTextNode(" "));
+                            }
+                        });
+
+                    } else {
+                        td.textContent = valeur;  
                     }
-                }
-            }, function(error) {
-                console.error("Erreur lors de la lecture des données", error);
-            });
-        }
-    
-        // Fonction pour mettre à jour les données dans Google Sheets
-        function updateData() {
-            var spreadsheetId = '1NIf0WW4AQjA-7JXAQjjWo6RAxU0woHc0ECgl3ePAXaw'; // ID de ton Google Sheets
-            var range = 'Sheet1!A2';  // Plage de la cellule à mettre à jour
-            var values = [
-                ["Alice", 28]  // Les nouvelles données à insérer
-            ];
-            
-            var body = {
-                values: values
-            };
-            
-            var request = gapi.client.sheets.spreadsheets.values.update({
-                spreadsheetId: spreadsheetId,
-                range: range,
-                valueInputOption: 'RAW',
-                resource: body
-            });
-            
-            request.then(function(response) {
-                console.log("Données mises à jour avec succès", response);
-            }, function(error) {
-                console.error("Erreur lors de la mise à jour des données", error);
+
+                    tr.appendChild(td);
+                });
+
+                tableBody.appendChild(tr);
             });
         }
 
-        // Charger l'API et appeler la fonction loadClient
-        gapi.load('client', loadClient);
+// Fonction de tri naturel pour les chaînes contenant des chiffres et des lettres
+function naturalSort(a, b) {
+    const re = /(\d+)|(\D+)/g;
+    const aParts = a.match(re) || [];
+    const bParts = b.match(re) || [];
+
+    for (let i = 0; i < Math.min(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i];
+        const bPart = bParts[i];
+
+        // Si c'est un nombre, on fait la comparaison numérique
+        if (/\d/.test(aPart) && /\d/.test(bPart)) {
+            const numA = parseInt(aPart, 10);
+            const numB = parseInt(bPart, 10);
+            if (numA !== numB) return numA - numB;
+        } else {
+            // Sinon on compare les chaînes de caractères
+            if (aPart !== bPart) return aPart.localeCompare(bPart);
+        }
+    }
+
+    return aParts.length - bParts.length;
+}
+
+function trierColonne(index, colonne) {
+    // Liste des colonnes interdites au tri
+    const colonnesInterdites = [0, 2, 4, 7, 8, 9, 10];
+
+    // Vérifie si la colonne est dans la liste des colonnes interdites
+    if (colonnesInterdites.includes(index)) {
+        return; // Ne fait rien si la colonne est interdite
+    }
+
+    // Définir l'ordre de tri
+    if (sortColumn === colonne) {
+        sortAscending = !sortAscending; // Inverser le tri si on reclique
+    } else {
+        sortColumn = colonne;
+        sortAscending = true;
+    }
+
+    filteredData.sort((a, b) => {
+        let valA = a[colonne] || "";
+        let valB = b[colonne] || "";
+
+        // Si on trie la colonne 2 (index 1), tri d'abord les chiffres, puis les éléments alphabétiques
+        if (index === 1) {
+            const isNumericA = /^\d/.test(valA); // Vérifie si la valeur commence par un chiffre
+            const isNumericB = /^\d/.test(valB); // Vérifie si la valeur commence par un chiffre
+
+            if (isNumericA && !isNumericB) return -1; // Les chiffres viennent en premier
+            if (!isNumericA && isNumericB) return 1; // Les non-chiffres viennent après
+
+            // Si les deux valeurs commencent par un chiffre ou les deux par des lettres, on fait un tri naturel
+            return naturalSort(valA, valB) * (sortAscending ? 1 : -1);
+        }
+
+        // Tri numérique pour certaines colonnes
+        if (index === 1 || index === 3 || index === 5) {
+            const numA = parseFloat(valA) || 0;
+            const numB = parseFloat(valB) || 0;
+            return (numA - numB) * (sortAscending ? 1 : -1);
+        }
+
+        // Tri par défaut (chaîne de caractères)
+        return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
+    });
+
+    afficherTableau();
+}
+
+
+
+
+
+
+        document.getElementById("searchInput").addEventListener("input", function(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            filteredData = data.filter(row => {
+                return Object.values(row).some(value =>
+                    value.toString().toLowerCase().includes(searchTerm)
+                );
+            });
+            afficherTableau();
+        });
+
+        window.onload = chargerCSV;
     </script>
 
 </body>
