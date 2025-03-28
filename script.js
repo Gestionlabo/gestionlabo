@@ -28,9 +28,16 @@ function chargerCSV(url) {
         header: true,
         dynamicTyping: true,
         complete: function(results) {
+            if (results.data.length === 0) {
+                console.error("Aucune donnée trouvée dans le fichier CSV.");
+                return;
+            }
             data = results.data;
             filteredData = [...data]; // Initialiser filteredData avec toutes les données
-            afficherTableau();
+            afficherTableau(); // Mettre à jour le tableau avec les données
+        },
+        error: function(error) {
+            console.error("Erreur lors du chargement du fichier CSV:", error);
         }
     });
 }
@@ -44,7 +51,15 @@ function afficherTableau() {
     tableHeader.innerHTML = "";
     tableBody.innerHTML = "";
 
-    if (filteredData.length === 0) return;
+    if (filteredData.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 100;  // S'assurer que la cellule occupe toute la largeur du tableau
+        td.textContent = "Aucune donnée trouvée";
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+        return;
+    }
 
     // Ajouter les en-têtes de colonne
     Object.keys(filteredData[0]).forEach((colonne, index) => {
