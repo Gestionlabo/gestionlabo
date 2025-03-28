@@ -10,7 +10,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; cursor: pointer; }
         th { background-color: #f4f4f4; }
-        #message { font-weight: bold; margin-top: 20px; }
         #searchInput { margin-top: 10px; padding: 5px; width: 100%; font-size: 16px; }
     </style>
 </head>
@@ -19,8 +18,6 @@
     <h1>Inventaire</h1>
     
     <p>Stock au 12/03/2025</p>
-    
-    <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données. Pour trier par pictogrammes de sécurité, veuillez rechercher SGH.. (SGH01 pour explosif, 02 inflammable, 03 comburant, 05 corrosif, 06 mortel, 07 nocif, 08 cancérogène et 09 environnement)</p>
     
     <input type="text" id="searchInput" placeholder="Rechercher...">
 
@@ -34,7 +31,9 @@
     <script>
         let data = [];
         let filteredData = [];
+        let sortColumn = null;
         let sortAscending = true;
+
         const csvUrl = "https://raw.githubusercontent.com/Gestionlabo/gestionlabo/refs/heads/main/data.csv"; 
 
         const pictograms = {
@@ -76,12 +75,10 @@
             if (filteredData.length === 0) return;
 
             // Créer les entêtes de colonnes
-            Object.keys(filteredData[0]).forEach(colonne => {
+            Object.keys(filteredData[0]).forEach((colonne) => {
                 const th = document.createElement("th");
                 th.textContent = colonne;
-                if (colonne !== "Nom produit") { // Ne pas ajouter de tri pour la colonne 3
-                    th.onclick = () => trierColonne(colonne);
-                }
+                th.onclick = () => trierColonne(colonne);
                 tableHeader.appendChild(th);
             });
 
@@ -129,31 +126,22 @@
                     return valA - valB;
                 }
 
-                // Si la colonne contient des chaînes (en particulier pour la colonne 2)
-                if (index === 1) {
-                    const regex = /(\d+)(.*)/; // Expression régulière pour extraire les chiffres
-                    const matchA = valA.match(regex);
-                    const matchB = valB.match(regex);
-
-                    // Comparaison numérique au début de la chaîne
-                    if (matchA && matchB) {
-                        const numA = parseInt(matchA[1], 10);
-                        const numB = parseInt(matchB[1], 10);
-                        if (numA !== numB) {
-                            return numA - numB;
-                        }
-                    }
-                }
-
                 // Comparaison lexicographique si les valeurs sont égales
                 return valA.localeCompare(valB);
             });
 
             // Inverser l'ordre de tri à chaque clic
-            if (sortAscending) {
+            if (sortColumn === colonne) {
+                sortAscending = !sortAscending;
+            } else {
+                sortColumn = colonne;
+                sortAscending = true;
+            }
+
+            // Si l'ordre est inversé, on inverse les données après le tri
+            if (!sortAscending) {
                 filteredData.reverse();
             }
-            sortAscending = !sortAscending;
 
             afficherTableau();
         }
