@@ -31,16 +31,11 @@ th {
     padding-right: 20px; /* Plus d'espace pour la flèche */
 }
 
-th::after {
-    content: ""; /* Pas de flèche par défaut */
-    position: absolute;
-    right: 5px;
-    font-size: 30px;
-    opacity: 0; /* Pas de flèche par défaut */
-}
 
 /* Afficher les flèches uniquement pour les colonnes 2, 3, 4, et 6 */
 th[data-sortable="true"]::after {
+    right: 5px;
+    font-size: 30px;
     content: " ⬍"; /* Flèche par défaut */
     opacity: 0.5;
 }
