@@ -16,9 +16,7 @@
 </head>
 <body>
 
-    <h1>Inventaire v12</h1>
-    
-    <p>Stock au 12/03/2025</p>
+    <h1>Inventaire v14</h1>
     
     <p>Vous pouvez cliquer sur l'entête des colonnes pour trier les données. Pour trier par pictogrammes de sécurité, veuillez rechercher SGH.. (SGH01 pour explosif, 02 inflammable, 03 comburant, 05 corrosif, 06 mortel, 07 nocif, 08 cancérogène et 09 environnement)</p>
     
@@ -120,15 +118,29 @@
                 let valA = a[colonne] || "";
                 let valB = b[colonne] || "";
 
+                // Si la colonne contient des nombres (comme les colonnes 4, 6, 8)
                 if (isNumeric) {
                     valA = parseFloat(valA) || 0;
                     valB = parseFloat(valB) || 0;
+                    return valA - valB;
                 }
 
-                if (typeof valA === "string" && typeof valB === "string") {
-                    return valA.localeCompare(valB);
+                // Si la colonne contient des chaînes, en particulier pour les colonnes 1, 2, et 3
+                const regex = /(\d+)(.*)/; // Expression régulière pour extraire les chiffres
+                const matchA = valA.match(regex);
+                const matchB = valB.match(regex);
+
+                // Comparaison numérique au début de la chaîne
+                if (matchA && matchB) {
+                    const numA = parseInt(matchA[1], 10);
+                    const numB = parseInt(matchB[1], 10);
+                    if (numA !== numB) {
+                        return numA - numB;
+                    }
                 }
-                return valA - valB;
+
+                // Comparaison lexicographique si les nombres sont égaux
+                return valA.localeCompare(valB);
             });
 
             // Inverser l'ordre de tri à chaque clic
