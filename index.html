@@ -18,7 +18,7 @@
 </head>
 <body>
 
-    <h1>Inventaire vdésespoir</h1>
+    <h1>Inventaire vdésespoirvraimentprofond</h1>
     
     <p>Stock au 12/03/2025</p>
     
@@ -182,22 +182,8 @@ function trierColonne(index, colonne) {
         let valA = a[colonne] || "";
         let valB = b[colonne] || "";
 
-        // Spécifique pour la colonne 1 (État physique : Solide avant Liquide)
-        if (index === 0) {
-            const ordre = { "Solide": 0, "Liquide": 1 };
-            return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
-        }
-
-        // Tri pour les colonnes 2 et 3 (noms chimiques ou autres chaînes alphanumériques)
-        if (index === 1 || index === 2) {
-            valA = valA.toLowerCase();
-            valB = valB.toLowerCase();
-            const result = naturalSort(valA, valB);
-            return result * (sortAscending ? 1 : -1);
-        }
-
         // Tri numérique pour colonnes 4 et 6
-        if (index === 3 || index === 5) {
+        if (index === 1 || index === 2 || index === 3 || index === 5) {
             const numA = parseFloat(valA) || 0;
             const numB = parseFloat(valB) || 0;
             return (numA - numB) * (sortAscending ? 1 : -1);
