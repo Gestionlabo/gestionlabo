@@ -16,7 +16,7 @@
 </head>
 <body>
 
-    <h1>Inventaire v11</h1>
+    <h1>Inventaire v12</h1>
     
     <p>Stock au 12/03/2025</p>
     
@@ -34,11 +34,20 @@
     <script>
         let data = [];
         let filteredData = [];
-        let sortColumn = null;
         let sortAscending = true;
+        const csvUrl = "https://raw.githubusercontent.com/Gestionlabo/gestionlabo/refs/heads/main/data.csv"; 
 
-        // Charger le fichier CSV depuis GitHub
-        const csvUrl = "https://raw.githubusercontent.com/Gestionlabo/gestionlabo/refs/heads/main/data.csv"; // Remplace par ton URL
+        const pictograms = {
+            "SGH07": "https://upload.wikimedia.org/wikipedia/commons/c/c3/GHS-pictogram-exclam.svg",
+            "SGH04": "https://upload.wikimedia.org/wikipedia/commons/6/6a/GHS-pictogram-bottle.svg",
+            "SGH01": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/GHS-pictogram-explos.svg/100px-GHS-pictogram-explos.svg.png",
+            "SGH02": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/GHS-pictogram-flamme.svg/100px-GHS-pictogram-flamme.svg.png",
+            "SGH03": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/GHS-pictogram-rondflam.svg/100px-GHS-pictogram-rondflam.svg.png",
+            "SGH05": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/GHS-pictogram-acid.svg/100px-GHS-pictogram-acid.svg.png",
+            "SGH06": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/GHS-pictogram-skull.svg/100px-GHS-pictogram-skull.svg.png",
+            "SGH08": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/GHS-pictogram-silhouette.svg/100px-GHS-pictogram-silhouette.svg.png",
+            "SGH09": "https://upload.wikimedia.org/wikipedia/commons/b/b9/GHS-pictogram-pollu.svg?uselang=fr"
+        };
 
         function chargerCSV() {
             fetch(csvUrl)
@@ -47,7 +56,7 @@
                     Papa.parse(csvText, {
                         delimiter: ";",
                         header: true,
-                        complete: function(result) {
+                        complete: (result) => {
                             data = result.data;
                             filteredData = [...data];
                             afficherTableau();
@@ -66,114 +75,74 @@
 
             if (filteredData.length === 0) return;
 
-            // Ajouter les entêtes des colonnes
-            Object.keys(filteredData[0]).forEach((colonne) => {
+            // Créer les entêtes de colonnes
+            Object.keys(filteredData[0]).forEach(colonne => {
                 const th = document.createElement("th");
                 th.textContent = colonne;
-                th.onclick = () => trierColonne(colonne); // Trier lors du clic sur l'entête
+                th.onclick = () => trierColonne(colonne);
                 tableHeader.appendChild(th);
             });
 
-            // Ajouter les lignes du tableau
+            // Ajouter les lignes
             filteredData.forEach(ligne => {
                 const tr = document.createElement("tr");
-
                 Object.entries(ligne).forEach(([colonne, valeur], index) => {
                     const td = document.createElement("td");
 
-                    if (index === 6) {  // Vérifie si on est bien dans la colonne 8
-                        td.innerHTML = "";  
-                        const pictos = valeur.split(" ");  // Séparer plusieurs SGH
-
+                    // Traitement des pictogrammes SGH
+                    if (index === 6) {
+                        td.innerHTML = "";
+                        const pictos = valeur.split(" ");
                         pictos.forEach(picto => {
-                            const img = document.createElement("img");
-                            img.style.width = "45px"; 
-
-                            switch (picto) {
-                                case "SGH07":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/c/c3/GHS-pictogram-exclam.svg";
-                                    img.alt = "Pictogramme SGH07";
-                                    break;    
-                                case "SGH04":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/6/6a/GHS-pictogram-bottle.svg";
-                                    img.alt = "Pictogramme SGH04";
-                                    break;
-                                case "SGH01":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/GHS-pictogram-explos.svg/100px-GHS-pictogram-explos.svg.png";
-                                    img.alt = "Pictogramme SGH01";
-                                    break;
-                                case "SGH02":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/GHS-pictogram-flamme.svg/100px-GHS-pictogram-flamme.svg.png";
-                                    img.alt = "Pictogramme SGH02";
-                                    break;
-                                case "SGH03":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/GHS-pictogram-rondflam.svg/100px-GHS-pictogram-rondflam.svg.png";
-                                    img.alt = "Pictogramme SGH03";
-                                    break;
-                                case "SGH05":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/GHS-pictogram-acid.svg/100px-GHS-pictogram-acid.svg.png";
-                                    img.alt = "Pictogramme SGH05";
-                                    break;
-                                case "SGH06":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/GHS-pictogram-skull.svg/100px-GHS-pictogram-skull.svg.png";
-                                    img.alt = "Pictogramme SGH06";
-                                    break;
-                                case "SGH08":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/GHS-pictogram-silhouette.svg/100px-GHS-pictogram-silhouette.svg.png";
-                                    img.alt = "Pictogramme SGH08";
-                                    break;
-                                case "SGH09":
-                                    img.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/GHS-pictogram-pollu.svg?uselang=fr";
-                                    img.alt = "Pictogramme SGH09";
-                                    break;
-                            }
-
-                            if (img.src) { 
+                            if (pictograms[picto]) {
+                                const img = document.createElement("img");
+                                img.style.width = "45px";
+                                img.src = pictograms[picto];
+                                img.alt = `Pictogramme ${picto}`;
                                 td.appendChild(img);
-                                td.appendChild(document.createTextNode(" "));
                             }
                         });
-
                     } else {
-                        td.textContent = valeur;  
+                        td.textContent = valeur;
                     }
 
                     tr.appendChild(td);
                 });
-
                 tableBody.appendChild(tr);
             });
         }
 
         function trierColonne(colonne) {
-            // Trouver l'index de la colonne sélectionnée
             const index = Object.keys(filteredData[0]).indexOf(colonne);
+            const isNumeric = [3, 5, 7].includes(index);
 
-            if (index === 0 || index === 1 || index === 2 || index === 4) { // Tri alphabétique pour les colonnes 1, 2, 3, 5
-                filteredData.sort((a, b) => {
-                    let valA = a[colonne] || "";
-                    let valB = b[colonne] || "";
-                    return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
-                });
-            } else if (index === 3 || index === 5 || index === 7) { // Tri numérique pour les colonnes 4, 6, 8
-                filteredData.sort((a, b) => {
-                    const numA = parseFloat(a[colonne]) || 0;
-                    const numB = parseFloat(b[colonne]) || 0;
-                    return (numA - numB) * (sortAscending ? 1 : -1);
-                });
+            filteredData.sort((a, b) => {
+                let valA = a[colonne] || "";
+                let valB = b[colonne] || "";
+
+                if (isNumeric) {
+                    valA = parseFloat(valA) || 0;
+                    valB = parseFloat(valB) || 0;
+                }
+
+                if (typeof valA === "string" && typeof valB === "string") {
+                    return valA.localeCompare(valB);
+                }
+                return valA - valB;
+            });
+
+            // Inverser l'ordre de tri à chaque clic
+            if (sortAscending) {
+                filteredData.reverse();
             }
+            sortAscending = !sortAscending;
 
-            sortAscending = !sortAscending; // Inverser l'ordre de tri
             afficherTableau();
         }
 
         document.getElementById("searchInput").addEventListener("input", function(event) {
             const searchTerm = event.target.value.toLowerCase();
-            filteredData = data.filter(row => {
-                return Object.values(row).some(value =>
-                    value.toString().toLowerCase().includes(searchTerm)
-                );
-            });
+            filteredData = data.filter(row => Object.values(row).some(value => value.toString().toLowerCase().includes(searchTerm)));
             afficherTableau();
         });
 
