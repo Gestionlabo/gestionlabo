@@ -18,6 +18,7 @@ th, td {
     padding: 8px;
     text-align: left;
     cursor: pointer;
+    position: relative; /* Ajouté pour permettre de positionner la flèche */
 }
 
 th {
@@ -26,17 +27,14 @@ th {
 }
 
 th {
-    position: relative;
-    cursor: pointer;
-    padding-right: 20px; /* Plus d'espace pour la flèche */
+    padding-right: 30px; /* Ajouté plus d'espace à droite pour la flèche */
 }
 
-
-/* Afficher les flèches uniquement pour les colonnes 2, 3, 4, et 6 */
 th[data-sortable="true"]::after {
-    right: 5px;
-    font-size: 30px;
     content: " ⬍"; /* Flèche par défaut */
+    position: absolute;
+    right: 5px; /* Positionner la flèche sur le côté droit */
+    font-size: 30px;
     opacity: 0.5;
 }
 
@@ -51,8 +49,6 @@ th.sorted-desc::after {
     content: " 🔽"; /* Flèche vers le bas */
     opacity: 1;
 }
-
-
 
 #searchInput {
     margin-top: 10px;
