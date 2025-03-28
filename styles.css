@@ -25,17 +25,30 @@ th {
     position: relative;
 }
 
-th.sorted-asc::after {
-    content: "\25B2"; /* Flèche vers le haut */
+th {
+    position: relative;
+    cursor: pointer;
+    padding-right: 20px; /* Espace pour la flèche */
+}
+
+th::after {
+    content: " ⬍"; /* Flèche par défaut (haut et bas) */
     position: absolute;
-    right: 10px;
+    right: 5px;
+    font-size: 14px;
+    opacity: 0.5;
+}
+
+th.sorted-asc::after {
+    content: " 🔼"; /* Flèche vers le haut */
+    opacity: 1;
 }
 
 th.sorted-desc::after {
-    content: "\25BC"; /* Flèche vers le bas */
-    position: absolute;
-    right: 10px;
+    content: " 🔽"; /* Flèche vers le bas */
+    opacity: 1;
 }
+
 
 #searchInput {
     margin-top: 10px;
