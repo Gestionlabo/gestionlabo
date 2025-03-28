@@ -18,7 +18,7 @@
 </head>
 <body>
 
-    <h1>Inventaire vespérancdfdfgdfcge</h1>
+    <h1>Inventaire v chill</h1>
     
     <p>Stock au 12/03/2025</p>
     
@@ -190,6 +190,18 @@ function trierColonne(index, colonne) {
         let valA = a[colonne] || "";
         let valB = b[colonne] || "";
 
+        // Si on trie la colonne 2 (index 1), tri d'abord les chiffres, puis les éléments alphabétiques
+        if (index === 1) {
+            const isNumericA = /^\d/.test(valA); // Vérifie si la valeur commence par un chiffre
+            const isNumericB = /^\d/.test(valB); // Vérifie si la valeur commence par un chiffre
+
+            if (isNumericA && !isNumericB) return -1; // Les chiffres viennent en premier
+            if (!isNumericA && isNumericB) return 1; // Les non-chiffres viennent après
+
+            // Si les deux valeurs commencent par un chiffre ou les deux par des lettres, on fait un tri naturel
+            return naturalSort(valA, valB) * (sortAscending ? 1 : -1);
+        }
+
         // Tri numérique pour certaines colonnes
         if (index === 1 || index === 3 || index === 5) {
             const numA = parseFloat(valA) || 0;
@@ -203,6 +215,7 @@ function trierColonne(index, colonne) {
 
     afficherTableau();
 }
+
 
 
 
