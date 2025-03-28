@@ -163,13 +163,13 @@ function trierColonne(index, colonne) {
             return (ordre[valA] - ordre[valB]) * (sortAscending ? 1 : -1);
         }
 
-        // Tri alphabétique pour colonnes 2 et 3
-        if (index === 1 || index === 2) {
+        // Tri alphabétique pour les colonnes 1, 2, et 3 (ou toute autre colonne souhaitée)
+        if (index === 1 || index === 2 || index === 3) {
             return valA.localeCompare(valB) * (sortAscending ? 1 : -1);
         }
 
         // Tri numérique pour colonnes 4 et 6
-        if (index === 3 || index === 5) {
+        if (index === 4 || index === 5) {
             const numA = parseFloat(valA) || 0;
             const numB = parseFloat(valB) || 0;
             return (numA - numB) * (sortAscending ? 1 : -1);
@@ -181,6 +181,7 @@ function trierColonne(index, colonne) {
 
     afficherTableau();
 }
+
 
 
 
