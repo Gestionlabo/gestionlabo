@@ -12,6 +12,7 @@ function chargerCSV() {
             Papa.parse(csvText, {
                 delimiter: ";",
                 header: true,
+                encoding: "UTF-8",
                 complete: function(result) {
                     data = result.data;
                     filteredData = [...data];
