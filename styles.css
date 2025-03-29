@@ -1,0 +1,31 @@
+/* Bordures de table */
+table.dataTable {
+    border-collapse: collapse;
+    width: 100%; /* Assure que la table prend toute la largeur du conteneur */
+}
+
+/* Bordures et espacement des cellules */
+table.dataTable th, table.dataTable td {
+    border: 1px solid #ddd; /* Bordure légère grise */
+    padding: 8px; /* Espacement interne des cellules */
+    text-align: left; /* Alignement du texte à gauche */
+}
+
+/* Surbrillance des lignes paires */
+table.dataTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Couleur de fond gris clair pour les lignes paires */
+}
+
+
+h2 {
+    text-align: center;
+}
+
+h3 {
+    text-align: center;
+}
+
+/* Aligner tout le texte dans le tableau au centre */
+table.dataTable td, table.dataTable th {
+    text-align: center;
+}
