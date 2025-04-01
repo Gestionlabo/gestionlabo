@@ -30,21 +30,24 @@ $(document).ready(function () {
             let rowHTML = "<tr>";
             
             ligne.forEach((cell, index) => {
-                if (index === 6) { // Si on est dans la colonne 7
-                    let pictosHTML = "";
-                    let codes = cell.split(" "); // Séparer les codes SGH par espace
+    if (index === 6) { // Si on est dans la colonne des pictogrammes
+        let pictosHTML = "";
+        let codes = cell.split(" "); // Séparer les codes SGH par espace
+        let hiddenText = ""; // Texte invisible pour la recherche
 
-                    codes.forEach(code => {
-                        if (pictogrammes[code]) {
-                            pictosHTML += `<img src="${pictogrammes[code]}" alt="Pictogramme ${code}" width="50" style="margin-right: 5px;">`;
-                        }
-                    });
+        codes.forEach(code => {
+            if (pictogrammes[code]) {
+                pictosHTML += `<img src="${pictogrammes[code]}" alt="Pictogramme ${code}" width="40" style="margin-right: 5px;">`;
+                hiddenText += code + " "; // Ajouter le code SGH au texte caché
+            }
+        });
 
-                    rowHTML += `<td>${pictosHTML || cell}</td>`; // Affiche pictos ou texte si inconnu
-                } else {
-                    rowHTML += `<td>${cell}</td>`; // Affichage classique
-                }
-            });
+        rowHTML += `<td>${pictosHTML}<span style="display:none;">${hiddenText}</span></td>`;
+    } else {
+        rowHTML += `<td>${cell}</td>`;
+    }
+});
+
 
             rowHTML += "</tr>";
             $("#tableau tbody").append(rowHTML);
