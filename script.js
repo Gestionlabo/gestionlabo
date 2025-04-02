@@ -14,6 +14,7 @@ const pictogrammes = {
     "SGH09": "https://upload.wikimedia.org/wikipedia/commons/b/b9/GHS-pictogram-pollu.svg?uselang=fr"
 };
 
+
 $(document).ready(function () {
     $.get(googleSheetURL, function (data) {
         let lignes = data.split("\n").map(l => l.split(","));
