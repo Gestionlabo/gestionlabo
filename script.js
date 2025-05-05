@@ -44,9 +44,14 @@ $(document).ready(function () {
         });
 
         rowHTML += `<td>${pictosHTML}<span style="display:none;">${hiddenText}</span></td>`;
+   } else {
+    if (cell.startsWith("http://") || cell.startsWith("https://")) {
+        rowHTML += `<td><a href="${cell}" target="_blank">${cell}</a></td>`;
     } else {
         rowHTML += `<td>${cell}</td>`;
     }
+}
+
 });
 
 
